@@ -8,12 +8,10 @@ const IS_CLIENT    = 'ReactResolver.IS_CLIENT'
 export default class Resolver extends React.Component {
 
   static childContextTypes = {
-    // resolver: React.PropTypes.instanceOf(Resolver)
     resolver: React.PropTypes.object
   }
 
   static contextTypes = {
-    // resolver: React.PropTypes.instanceOf(Resolver)
     resolver: React.PropTypes.object
   }
 
