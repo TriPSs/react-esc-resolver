@@ -1,4 +1,5 @@
-# React-ESC-Resolver ![https://img.shields.io/npm/v/react-esc-resolver.svg](https://img.shields.io/npm/v/react-esc-resolver.svg?style=flat-square) [![](https://img.shields.io/github/issues-raw/tripss/react-esc-resolver.svg?style=flat-square)](https://github.com/tripss/react-esc-resolver/issues) [![](https://img.shields.io/david/tripss/react-esc-resolver.svg?style=flat-square)](https://david-dm.org/tripss/react-esc-resolver#info=dependencies)
+# React-ESC-Resolver ![https://img.shields.io/npm/v/react-esc-resolver.svg](https://img.shields.io/npm/v/react-esc-resolver.svg?style=flat-square) [![npm downloads](https://img.shields.io/npm/dt/react-esc-resolver.svg?maxAge=2592000)]()
+ [![](https://img.shields.io/github/issues-raw/tripss/react-esc-resolver.svg?style=flat-square)](https://github.com/tripss/react-esc-resolver/issues) [![](https://img.shields.io/david/tripss/react-esc-resolver.svg?style=flat-square)](https://david-dm.org/tripss/react-esc-resolver#info=dependencies)
 
 > Async-rendering & data-fetching for universal React applications.
 
