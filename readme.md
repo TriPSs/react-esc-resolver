@@ -45,8 +45,10 @@ this project and run:
 
 ```shell
 $ npm install
-$ npm test
 ```
+You can use `npm link` to use your development version in your own project:
+- Go to `react-esc-resolver` directory and execute command `npm link`
+- Go to your project directory and execute command `npm link react-esc-resolver`
 
 ## [License](https://github.com/tripss/react-esc-resolver/blob/master/LICENSE)
 
