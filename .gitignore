@@ -3,5 +3,6 @@ node_modules
 resolve.js
 Resolver.js
 index.js
+client.js
 
 !src/*

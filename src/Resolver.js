@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import { renderToStaticMarkup } from 'react-dom/server'
 
@@ -8,11 +9,11 @@ const IS_CLIENT    = 'ReactResolver.IS_CLIENT'
 export default class Resolver extends React.Component {
 
   static childContextTypes = {
-    resolver: React.PropTypes.object
+    resolver: PropTypes.object
   }
 
   static contextTypes = {
-    resolver: React.PropTypes.object
+    resolver: PropTypes.object
   }
 
   static defaultProps = {
@@ -23,9 +24,9 @@ export default class Resolver extends React.Component {
   static displayName = 'Resolver'
 
   static propTypes = {
-    children: React.PropTypes.func.isRequired,
-    props   : React.PropTypes.object,
-    resolve : React.PropTypes.object
+    children: PropTypes.func.isRequired,
+    props   : PropTypes.object,
+    resolve : PropTypes.object
   }
 
   static renderClient = function (render, node) {
