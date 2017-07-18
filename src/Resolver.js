@@ -60,8 +60,9 @@ export default class Resolver extends React.Component {
 
       const data = { ...initialData, ...formatResults }
 
-      if (Object.keys(initialData).length < Object.keys(data).length)
+      if (Object.keys(initialData).length < Object.keys(data).length) {
         return Resolver.renderServer(render, data)
+      }
 
       class Resolved extends React.Component {
 
@@ -105,11 +106,13 @@ export default class Resolver extends React.Component {
     const { props, cache } = this.props
 
     if (cache || isServer) {
-      if (props.hasOwnProperty(resolve))
+      if (props.hasOwnProperty(resolve)) {
         return props[resolve]
+      }
 
-      else if (this.context.resolver)
+      else if (this.context.resolver) {
         return this.context.resolver.cached(resolve)
+      }
     }
 
     return null
@@ -145,8 +148,9 @@ export default class Resolver extends React.Component {
         const factory           = resolve[name]
         nextState.pending[name] = factory(props)
 
-      } else if (cached)
+      } else if (cached) {
         nextState.resolved[name] = cached
+      }
 
     })
 
@@ -172,14 +176,15 @@ export default class Resolver extends React.Component {
   }
 
   onResolve(state) {
-    if (this.props.onResolve)
+    if (this.props.onResolve) {
       return this.props.onResolve(state)
 
-    else if (this.context.resolver)
+    } else if (this.context.resolver) {
       return this.context.resolver.onResolve(state)
 
-    else
+    } else {
       return state
+    }
   }
 
   render() {
