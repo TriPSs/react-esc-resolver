@@ -81,6 +81,8 @@ export default class Resolver extends React.Component {
     })
   }
 
+  unMounted = true
+
   constructor(props, context) {
     super(props, context)
 
@@ -93,6 +95,7 @@ export default class Resolver extends React.Component {
       resolved: {},
     })
 
+    console.log('Resolver', 'construcotr')
     if (this.isPending(this.state)) {
       this.resolve(this.state)
       this[HAS_RESOLVED] = false
@@ -118,6 +121,10 @@ export default class Resolver extends React.Component {
     return null
   }
 
+  componentWillMount() {
+    this.unMounted = false
+  }
+
   componentDidMount() {
     this[IS_CLIENT] = true
   }
@@ -132,26 +139,41 @@ export default class Resolver extends React.Component {
     // Next state will resolve async props again, but update existing sync props
     const nextState = {
       pending,
-      resolved: { ...this.state.resolved, ...resolved },
+      resolved,
     }
 
     this.setAtomicState(nextState)
   }
 
-  computeState(thisProps, nextState) {
+  computeState(thisProps, state) {
     const { resolve, props } = thisProps
+    let nextState            = state
 
     Object.keys(resolve).forEach(name => {
       const cached = this.cached(name)
 
-      if (!nextState.resolved.hasOwnProperty(name) && !nextState.pending.hasOwnProperty(name) && !cached) {
-        const factory           = resolve[name]
-        nextState.pending[name] = factory(props)
+      if (!state.resolved.hasOwnProperty(name) && !state.pending.hasOwnProperty(name) && !cached) {
+        const factory = resolve[name]
+
+        nextState = {
+          ...state,
+          pending: {
+            ...state.pending,
+            [name]: factory(props),
+          }
+
+        }
 
       } else if (cached) {
-        nextState.resolved[name] = cached
-      }
+        nextState = {
+          ...state,
+          resolved: {
+            ...state.resolved,
+            [name]: cached
+          }
 
+        }
+      }
     })
 
     return nextState
@@ -200,7 +222,6 @@ export default class Resolver extends React.Component {
 
     // Both those props provided by parent & dynamically resolved
     return this.props.children({
-      ...this.state.resolved,
       ...this.props.props
     })
   }

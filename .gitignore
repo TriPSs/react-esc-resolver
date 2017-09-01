@@ -1,8 +1,17 @@
-node_modules
-.idea
-resolve.js
-Resolver.js
-index.js
-client.js
+*
 
-!src/*
+!__mocks__
+!__mocks__/*
+!types/**/*
+!types
+!.babelrc
+!.editorconfig
+!.eslintrc
+!.flowconfig
+!.gitignore
+!.npmignore
+!package.json
+!package-lock.json
+!readme.md
+!src/**/*
+!src
