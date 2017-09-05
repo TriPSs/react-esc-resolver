@@ -95,7 +95,6 @@ export default class Resolver extends React.Component {
       resolved: {},
     })
 
-    console.log('Resolver', 'construcotr')
     if (this.isPending(this.state)) {
       this.resolve(this.state)
       this[HAS_RESOLVED] = false
