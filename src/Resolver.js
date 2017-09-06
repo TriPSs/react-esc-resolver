@@ -29,7 +29,7 @@ export default class Resolver extends React.Component {
     resolve : PropTypes.object
   }
 
-  static renderClient = function (render, node) {
+  static renderClient = (render, node) => {
     ReactDOM.render((
       <Resolver>
         {render}
@@ -37,7 +37,7 @@ export default class Resolver extends React.Component {
     ), node)
   }
 
-  static renderServer = function (render, initialData = {}) {
+  static renderServer = (render, initialData = {}) => {
     const queue = []
 
     renderToStaticMarkup(
