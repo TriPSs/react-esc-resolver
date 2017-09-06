@@ -145,33 +145,17 @@ export default class Resolver extends React.Component {
   }
 
   computeState(thisProps, state) {
-    const { resolve, props } = thisProps
-    let nextState            = state
+    const { resolve } = thisProps
+    let nextState     = state
 
-    Object.keys(resolve).forEach(name => {
+    Object.keys(resolve).forEach((name) => {
       const cached = this.cached(name)
 
       if (!state.resolved.hasOwnProperty(name) && !state.pending.hasOwnProperty(name) && !cached) {
-        const factory = resolve[name]
-
-        nextState = {
-          ...state,
-          pending: {
-            ...state.pending,
-            [name]: factory(props),
-          }
-
-        }
+        nextState.pending[name] = resolve[name]
 
       } else if (cached) {
-        nextState = {
-          ...state,
-          resolved: {
-            ...state.resolved,
-            [name]: cached
-          }
-
-        }
+        nextState.resolved[name] = true
       }
     })
 
@@ -226,23 +210,21 @@ export default class Resolver extends React.Component {
   }
 
   resolve(state) {
-    const pending = Object.keys(state.pending).map(name => {
-      const promise = state.pending[name]
+    const { props } = this.props
 
-      return { name, promise }
+    const pending = Object.keys(state.pending).map((name) => {
+      const func = state.pending[name]
+
+      return { name, func }
     })
 
-    const promises = pending.map(({ promise }) => promise)
+    const promises = pending.map(({ func }) => func(props))
 
-    let resolving = Promise.all(promises).then((values) => {
-      return values.reduce((resolved, value, i) => {
-        const { name } = pending[i]
+    let resolving = Promise.all(promises).then((values) => values.reduce((resolved, value, i) => {
+      resolved[pending[i].name] = true
 
-        resolved[name] = value
-
-        return resolved
-      }, {})
-    })
+      return resolved
+    }, {}))
 
     // Resolve listeners get the current resolved
     resolving = this.onResolve(resolving)
@@ -272,8 +254,6 @@ export default class Resolver extends React.Component {
 
     // Prevent rendering until pending values are resolved
     if (this.isPending(nextState)) {
-      this.resolve(nextState)
-
       return false
     }
 
@@ -288,4 +268,5 @@ export default class Resolver extends React.Component {
 
     this.setState(nextState)
   }
+
 }

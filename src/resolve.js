@@ -7,8 +7,9 @@ const capitalize = (word) => {
 
 export default (prop, promise, cache = true) => {
 
-  const asyncProps = (arguments.length === 1) ? prop : { [prop]: promise }
-  const asyncNames = Object.keys(asyncProps).map(capitalize).join("")
+  const asyncProps   = (typeof prop === 'object') ? prop : { [prop]: promise }
+  const asyncNames   = Object.keys(asyncProps).map(capitalize).join('')
+  const cacheEnabled = (typeof prop === 'object' && typeof promise === 'boolean') ? promise : cache
 
   return Component => class extends React.Component {
 
@@ -16,7 +17,7 @@ export default (prop, promise, cache = true) => {
 
     render() {
       return (
-        <Resolver props={this.props} resolve={asyncProps} cache={cache}>
+        <Resolver props={this.props} resolve={asyncProps} cache={cacheEnabled}>
           {(resolved) => <Component {...resolved} />}
         </Resolver>
       )
