@@ -29,7 +29,7 @@ export default class Resolver extends React.Component {
     resolve : PropTypes.object
   }
 
-  static renderClient = function (render, node) {
+  static renderClient = (render, node) => {
     ReactDOM.render((
       <Resolver>
         {render}
@@ -37,7 +37,7 @@ export default class Resolver extends React.Component {
     ), node)
   }
 
-  static renderServer = function (render, initialData = {}) {
+  static renderServer = (render, initialData = {}) => {
     const queue = []
 
     renderToStaticMarkup(
@@ -81,6 +81,8 @@ export default class Resolver extends React.Component {
     })
   }
 
+  unMounted = true
+
   constructor(props, context) {
     super(props, context)
 
@@ -118,6 +120,10 @@ export default class Resolver extends React.Component {
     return null
   }
 
+  componentWillMount() {
+    this.unMounted = false
+  }
+
   componentDidMount() {
     this[IS_CLIENT] = true
   }
@@ -132,26 +138,25 @@ export default class Resolver extends React.Component {
     // Next state will resolve async props again, but update existing sync props
     const nextState = {
       pending,
-      resolved: { ...this.state.resolved, ...resolved },
+      resolved,
     }
 
     this.setAtomicState(nextState)
   }
 
-  computeState(thisProps, nextState) {
-    const { resolve, props } = thisProps
+  computeState(thisProps, state) {
+    const { resolve } = thisProps
+    let nextState     = state
 
-    Object.keys(resolve).forEach(name => {
+    Object.keys(resolve).forEach((name) => {
       const cached = this.cached(name)
 
-      if (!nextState.resolved.hasOwnProperty(name) && !nextState.pending.hasOwnProperty(name) && !cached) {
-        const factory           = resolve[name]
-        nextState.pending[name] = factory(props)
+      if (!state.resolved.hasOwnProperty(name) && !state.pending.hasOwnProperty(name) && !cached) {
+        nextState.pending[name] = resolve[name]
 
       } else if (cached) {
-        nextState.resolved[name] = cached
+        nextState.resolved[name] = true
       }
-
     })
 
     return nextState
@@ -200,29 +205,26 @@ export default class Resolver extends React.Component {
 
     // Both those props provided by parent & dynamically resolved
     return this.props.children({
-      ...this.state.resolved,
       ...this.props.props
     })
   }
 
   resolve(state) {
-    const pending = Object.keys(state.pending).map(name => {
-      const promise = state.pending[name]
+    const { props } = this.props
 
-      return { name, promise }
+    const pending = Object.keys(state.pending).map((name) => {
+      const func = state.pending[name]
+
+      return { name, func }
     })
 
-    const promises = pending.map(({ promise }) => promise)
+    const promises = pending.map(({ func }) => func(props))
 
-    let resolving = Promise.all(promises).then((values) => {
-      return values.reduce((resolved, value, i) => {
-        const { name } = pending[i]
+    let resolving = Promise.all(promises).then((values) => values.reduce((resolved, value, i) => {
+      resolved[pending[i].name] = true
 
-        resolved[name] = value
-
-        return resolved
-      }, {})
-    })
+      return resolved
+    }, {}))
 
     // Resolve listeners get the current resolved
     resolving = this.onResolve(resolving)
@@ -252,8 +254,6 @@ export default class Resolver extends React.Component {
 
     // Prevent rendering until pending values are resolved
     if (this.isPending(nextState)) {
-      this.resolve(nextState)
-
       return false
     }
 
@@ -268,4 +268,5 @@ export default class Resolver extends React.Component {
 
     this.setState(nextState)
   }
+
 }

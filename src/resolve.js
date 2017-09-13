@@ -5,23 +5,24 @@ const capitalize = (word) => {
   return word.replace(/^./, (letter) => letter.toUpperCase())
 }
 
-export default function resolve(prop, promise, cache = true) {
+export default (prop, promise, cache = true) => {
 
-  const asyncProps = (arguments.length === 1) ? prop : { [prop]: promise }
-  const asyncNames = Object.keys(asyncProps).map(capitalize).join("")
+  const asyncProps   = (typeof prop === 'object') ? prop : { [prop]: promise }
+  const asyncNames   = Object.keys(asyncProps).map(capitalize).join('')
+  const cacheEnabled = (typeof prop === 'object' && typeof promise === 'boolean') ? promise : cache
 
-  return function resolveDecorator(Component) {
-    return class PropResolver extends React.Component {
+  return Component => class extends React.Component {
 
-      static displayName = `${asyncNames}Resolver`
+    static displayName = `${asyncNames}Resolver`
 
-      render() {
-        return (
-          <Resolver props={this.props} resolve={asyncProps} cache={cache}>
-            {(resolved) => <Component {...this.props} {...resolved} />}
-          </Resolver>
-        )
-      }
+    render() {
+      return (
+        <Resolver props={this.props} resolve={asyncProps} cache={cacheEnabled}>
+          {(resolved) => <Component {...resolved} />}
+        </Resolver>
+      )
     }
+
   }
+
 }
