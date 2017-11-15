@@ -4,16 +4,16 @@ import ReactDOM from 'react-dom'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 const HAS_RESOLVED = 'ReactResolver.HAS_RESOLVED'
-const IS_CLIENT    = 'ReactResolver.IS_CLIENT'
+const IS_CLIENT = 'ReactResolver.IS_CLIENT'
 
 export default class Resolver extends React.Component {
 
   static childContextTypes = {
-    resolver: PropTypes.object
+    resolver: PropTypes.object,
   }
 
   static contextTypes = {
-    resolver: PropTypes.object
+    resolver: PropTypes.object,
   }
 
   static defaultProps = {
@@ -26,7 +26,7 @@ export default class Resolver extends React.Component {
   static propTypes = {
     children: PropTypes.func.isRequired,
     props   : PropTypes.object,
-    resolve : PropTypes.object
+    resolve : PropTypes.object,
   }
 
   static renderClient = (render, node) => {
@@ -47,7 +47,7 @@ export default class Resolver extends React.Component {
         return Promise.resolve(true)
       }}>
         {render}
-      </Resolver>
+      </Resolver>,
     )
 
     return Promise.all(queue).then((results) => {
@@ -88,7 +88,7 @@ export default class Resolver extends React.Component {
 
     // Internal tracking variables
     this[HAS_RESOLVED] = false
-    this[IS_CLIENT]    = false
+    this[IS_CLIENT] = false
 
     this.state = this.computeState(this.props, {
       pending : {},
@@ -110,9 +110,8 @@ export default class Resolver extends React.Component {
     if (cache || isServer) {
       if (props.hasOwnProperty(resolve)) {
         return props[resolve]
-      }
 
-      else if (this.context.resolver) {
+      } else if (this.context.resolver) {
         return this.context.resolver.cached(resolve)
       }
     }
@@ -146,12 +145,12 @@ export default class Resolver extends React.Component {
 
   computeState(thisProps, state) {
     const { resolve } = thisProps
-    let nextState     = state
+    let nextState = state
 
     Object.keys(resolve).forEach((name) => {
       const cached = this.cached(name)
 
-      if (!state.resolved.hasOwnProperty(name) && !state.pending.hasOwnProperty(name) && !cached) {
+      if (!state.resolved.hasOwnProperty(name) && !state.pending.hasOwnProperty(name) && !this.isValidCache(cached)) {
         nextState.pending[name] = resolve[name]
 
       } else if (cached) {
@@ -164,6 +163,13 @@ export default class Resolver extends React.Component {
 
   getChildContext() {
     return { resolver: this }
+  }
+
+  isValidCache(cache) {
+    return (cache !== null) &&
+           (typeof cache !== 'undefined') &&
+           (typeof cache !== 'object' || Object.keys(cache).length > 0) &&
+           (!Array.isArray(cache) || cache.length > 0)
   }
 
   isPending(state = this.state) {
