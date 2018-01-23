@@ -31,7 +31,9 @@
     "build": "NODE_ENV=production babel src -d ./ --copy-files --ignore __tests__",
     "build:watch": "npm run build -- --watch",
     "cleanup": "rimraf ./Resolver.js ./resolve.js ./index.js ./client.js",
-    "prepublish": "npm run cleanup && npm run build"
+    "prepublish": "npm run cleanup && npm run build",
+    "version": "npm run prepublish",
+    "postversion": "git push && git push --tags && npm publish"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
