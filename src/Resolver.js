@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { hasOwnProperty } from './utils'
 
 const HAS_RESOLVED = 'ReactResolver.HAS_RESOLVED'
 const IS_CLIENT = 'ReactResolver.IS_CLIENT'
@@ -108,7 +109,7 @@ export default class Resolver extends React.Component {
     const { props, cache } = this.props
 
     if (cache || isServer) {
-      if (props.hasOwnProperty(resolve)) {
+      if (hasOwnProperty(props, resolve)) {
         return props[resolve]
 
       } else if (this.context.resolver) {
@@ -150,7 +151,7 @@ export default class Resolver extends React.Component {
     Object.keys(resolve).forEach((name) => {
       const cached = this.cached(name)
 
-      if (!state.resolved.hasOwnProperty(name) && !state.pending.hasOwnProperty(name) && !this.isValidCache(cached)) {
+      if (!hasOwnProperty(state.resolved, name) && !hasOwnProperty(state.pending, name) && !this.isValidCache(cached)) {
         nextState.pending[name] = resolve[name]
 
       } else if (cached) {
@@ -211,7 +212,7 @@ export default class Resolver extends React.Component {
 
     // Both those props provided by parent & dynamically resolved
     return this.props.children({
-      ...this.props.props
+      ...this.props.props,
     })
   }
 

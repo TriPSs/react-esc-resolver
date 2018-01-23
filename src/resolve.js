@@ -1,14 +1,11 @@
 import React from 'react'
 import Resolver from './Resolver'
-
-const capitalize = (word) => {
-  return word.replace(/^./, (letter) => letter.toUpperCase())
-}
+import { capitalize } from './utils'
 
 export default (prop, promise, cache = true) => {
 
-  const asyncProps   = (typeof prop === 'object') ? prop : { [prop]: promise }
-  const asyncNames   = Object.keys(asyncProps).map(capitalize).join('')
+  const asyncProps = (typeof prop === 'object') ? prop : { [prop]: promise }
+  const asyncNames = Object.keys(asyncProps).map(capitalize).join('')
   const cacheEnabled = (typeof prop === 'object' && typeof promise === 'boolean') ? promise : cache
 
   return Component => class extends React.Component {
