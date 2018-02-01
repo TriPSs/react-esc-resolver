@@ -26,18 +26,13 @@ export default (prop, Loader) => {
 
       this.queue = []
       this.state = {
-        bypass: process.env.NODE_ENV === 'test',
+        bypass: isServer || process.env.NODE_ENV === 'test',
         loaded: this.isLoaded(props),
-        server: isServer,
       }
     }
 
     componentDidMount() {
-      this.setState({ server: false }, () => {
-        if (!this.isLoaded(this.props)) {
-          Promise.all(this.queue).then(() => this.setState({ loaded: true }))
-        }
-      })
+      this.setState({ server: false })
     }
 
     enqueue = (promise) => {
@@ -46,11 +41,11 @@ export default (prop, Loader) => {
       return promise
     }
 
-    isLoaded = (props) => {
+    isLoaded = () => {
       let loaded = true
 
       loadProps.forEach((prop) => {
-        if (!hasOwnProperty(props, prop) || !props[prop]) {
+        if (!hasOwnProperty(this.props, prop) || !this.props[prop]) {
           loaded = false
         }
       })
@@ -59,9 +54,9 @@ export default (prop, Loader) => {
     }
 
     render() {
-      const { bypass, loaded, server } = this.state
+      const { bypass } = this.state
 
-      if (bypass || loaded || server) {
+      if (bypass || this.isLoaded()) {
         return <Component {...this.props} />
       }
 
